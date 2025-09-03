@@ -5,7 +5,7 @@
    try {
      const loader = new PuppeteerWebBaseLoader(url, {
 -      launchOptions: { headless: "new" },
-+      launchOptions: { headless: "new", args: ['--no-sandbox'], },
++      launchOptions: { headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'], executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser', },
        gotoOptions: { waitUntil: "networkidle2" },
      });
      const docs = await loader.load();
@@ -14,7 +14,7 @@
      try {
        const loader = new PuppeteerWebBaseLoader(link, {
 -        launchOptions: { headless: "new" },
-+        launchOptions: { headless: "new", args: ['--no-sandbox'], },
++        launchOptions: { headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'], executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser', },
          gotoOptions: { waitUntil: "networkidle2" },
          async evaluate(page, browser) {
            const result = await page.evaluate(() => document.body.innerText);

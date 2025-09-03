@@ -61,9 +61,9 @@ if [ ! -L "/app/server/.env" ]; then
   ln -s /opt/app-root/src/anythingllm/.env /app/server/.env
 fi
 
-# Link Chromium binary for Puppeteer
-mkdir -p /opt/app-root/src/.cache
-ln -s /app/collector/node_modules/puppeteer/.local-chromium /opt/app-root/src/.cache/puppeteer
+# Link system Chromium binary for Puppeteer
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 export USER=$(whoami)
 

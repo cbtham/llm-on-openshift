@@ -1,4 +1,4 @@
-FROM docker.io/mintplexlabs/anythingllm:1.7.5 as anythingllm
+FROM docker.io/mintplexlabs/anythingllm:1.8.5 as anythingllm
 
 FROM quay.io/sclorg/s2i-core-c9s:c9s
 
@@ -65,9 +65,8 @@ RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
 # Install Chrome for Puppeteer (for web scraping) #
 ###################################################
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
-    yum -y install google-chrome-stable_current_x86_64.rpm && \
-    rm -f  google-chrome-stable_current_x86_64.rpm && \
+# Install Chromium instead of Chrome for better architecture support
+RUN yum -y install chromium && \
     yum -y clean all --enablerepo='*' && \
     rm -rf /var/cache/dnf && \
     find /var/log -type f -name "*.log" -exec rm -f {} \;
@@ -140,10 +139,9 @@ COPY --chown=1001:0 nginx/api/ /opt/app-root/api/
 COPY --chown=1001:0 --from=anythingllm /app /app
 RUN chmod -R g+rw /app && \
     chown -R 1001:0 /app && \
-    # Installing Puppeteer Chromium and moving it to a safe container location, we'll link it at runtime
-    node /app/collector/node_modules/puppeteer/install.mjs && \
-    mv /opt/app-root/src/.cache/puppeteer /app/collector/node_modules/puppeteer/.local-chromium && \
-    rm -rf /opt/app-root/src/.cache
+    # Skip Puppeteer's Chromium download since we're using system Chromium
+    echo "Using system Chromium instead of Puppeteer's bundled version" && \
+    mkdir -p /app/collector/node_modules/puppeteer/.local-chromium
 
 ############
 # Launcher #
